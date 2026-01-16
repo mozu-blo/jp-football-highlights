@@ -1,1 +1,29 @@
-
+{
+  "generated_at": "manual",
+  "items": [
+    {
+      "player_name": "テスト選手",
+      "club": "テストクラブ",
+      "league": "Premier League",
+      "home": "Test FC",
+      "away": "Example FC",
+      "kickoff_jst": "2026-01-01 23:00",
+      "score": { "home": 2, "away": 1 },
+      "appeared": true,
+      "youtube_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "is_new": true
+    },
+    {
+      "player_name": "テスト選手2",
+      "club": "テストクラブ2",
+      "league": "Bundesliga",
+      "home": "AAA",
+      "away": "BBB",
+      "kickoff_jst": "2026-01-02 01:30",
+      "score": { "home": null, "away": null },
+      "appeared": false,
+      "youtube_url": null,
+      "is_new": false
+    }
+  ]
+}
