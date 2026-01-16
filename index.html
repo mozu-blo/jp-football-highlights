@@ -1,1 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>今週｜海外日本人 出場試合（結果＋ハイライト）</title>
+</head>
+<body>
+  <h1>今週｜海外日本人 出場試合（結果＋ハイライト）</h1>
+  <div id="app">読み込み中…</div>
 
+  <script>
+    async function main() {
+      const res = await fetch('./data/feed.json', { cache: 'no-store' });
+      const data = await res.json();
+
+      const el = document.getElementById('app');
+      const items = data.items || [];
+      if (!items.length) { el.textContent = 'データがまだありません。'; return; }
+
+      el.innerHTML = items.map(x => {
+        const badge = x.is_new ? 'NEW ' : '';
+        const link = x.youtube_url
+          ? `<a href="${x.youtube_url}" target="_blank" rel="noopener noreferrer">▶ ハイライト（YouTube）</a>`
+          : (x.appeared === false ? '未出場' : '（ハイライト未公開）');
+
+        const score = (x.score && x.score.home != null && x.score.away != null)
+          ? `${x.score.home}-${x.score.away}` : '';
+
+        return `
+          <div style="padding:10px 0;border-bottom:1px solid #ddd;">
+            <div><strong>${badge}${x.player_name}</strong>｜${x.club}｜${x.league}</div>
+            <div>${x.kickoff_jst || ''} ${x.home} vs ${x.away} ${score}</div>
+            <div>${link}</div>
+          </div>
+        `;
+      }).join('');
+    }
+    main().catch(err => document.getElementById('app').textContent = 'エラー: ' + err.message);
+  </script>
+</body>
+</html>
