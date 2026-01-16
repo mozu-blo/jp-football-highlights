@@ -1,29 +1,20 @@
 {
-  "generated_at": "manual",
+  "generated_at": "2026-01-16T06:58:55.409Z",
   "items": [
     {
-      "player_name": "テスト選手",
-      "club": "テストクラブ",
+      "player_name": "自動生成テスト",
+      "club": "Auto FC",
       "league": "Premier League",
-      "home": "Test FC",
-      "away": "Example FC",
-      "kickoff_jst": "2026-01-01 23:00",
-      "score": { "home": 2, "away": 1 },
+      "home": "Auto Home",
+      "away": "Auto Away",
+      "kickoff_jst": "2026-01-03 23:00",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
       "appeared": true,
-      "youtube_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "is_new": true
-    },
-    {
-      "player_name": "テスト選手2",
-      "club": "テストクラブ2",
-      "league": "Bundesliga",
-      "home": "AAA",
-      "away": "BBB",
-      "kickoff_jst": "2026-01-02 01:30",
-      "score": { "home": null, "away": null },
-      "appeared": false,
       "youtube_url": null,
-      "is_new": false
+      "is_new": true
     }
   ]
 }
