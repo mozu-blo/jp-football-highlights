@@ -1,1 +1,8 @@
-
+{
+  "name": "jp-football-highlights",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:feed": "node scripts/build_feed.js"
+  }
+}
