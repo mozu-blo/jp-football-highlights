@@ -4,5 +4,6 @@
   "type": "module",
   "scripts": {
     "build:feed": "node scripts/build_feed.js"
+ "fetch:matches": "node scripts/fetch_matches.js"
   }
 }
