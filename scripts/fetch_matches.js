@@ -10,16 +10,18 @@ function isoDate(d) {
   return `${y}-${m}-${day}`;
 }
 
-// JST基準で「今週の月〜日」
-function weekRangeJST(now = new Date()) {
-  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const dow = jst.getUTCDay(); // 0=Sun..6=Sat
-  const diffToMon = (dow + 6) % 7;
-  const mon = new Date(jst);
-  mon.setUTCDate(jst.getUTCDate() - diffToMon);
-  const sun = new Date(mon);
-  sun.setUTCDate(mon.getUTCDate() + 6);
-  return { from: isoDate(mon), to: isoDate(sun) };
+// JSTで「今日」を作る（時差で日付がズレるのを防ぐ）
+function nowJST() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000);
+}
+
+// 直近N日（今日含む）: from〜to
+function rollingRangeJST(daysBack = 10) {
+  const jst = nowJST();
+  const to = new Date(jst);
+  const from = new Date(jst);
+  from.setUTCDate(from.getUTCDate() - (daysBack - 1));
+  return { from: isoDate(from), to: isoDate(to) };
 }
 
 async function api(path, params) {
@@ -44,15 +46,15 @@ async function main() {
   const players = loadJson("data/players.json");
   const leagues = loadJson("data/leagues.json");
 
-  // club -> [player_id]
   const clubToPlayers = new Map();
   for (const p of players) {
     if (!clubToPlayers.has(p.club)) clubToPlayers.set(p.club, []);
     clubToPlayers.get(p.club).push(p.player_id);
   }
 
-  const { from, to } = weekRangeJST();
-  console.log(`[week] from=${from} to=${to}`);
+  // ★ここが変更点：週固定 → 直近10日
+  const { from, to } = rollingRangeJST(10);
+  console.log(`[range] from=${from} to=${to} (rolling 10 days, JST-based)`);
   console.log(`[clubs in players.json] ${[...clubToPlayers.keys()].join(" | ")}`);
 
   const matches = [];
@@ -70,7 +72,6 @@ async function main() {
     const items = json?.response || [];
     console.log(`[fixtures returned] ${items.length}`);
 
-    // ★デバッグ：今週返ってきた試合のクラブ名を全部見る（多すぎたら最初の30件だけ）
     const preview = items.slice(0, 30).map((f) => ({
       date: f.fixture?.date,
       home: f.teams?.home?.name,
@@ -101,7 +102,7 @@ async function main() {
     console.log(`[matched] ${matches.length} (cumulative)`);
   }
 
-  const out = { week_start: from, week_end: to, matches };
+  const out = { range_from: from, range_to: to, matches };
   fs.writeFileSync("data/matches.json", JSON.stringify(out, null, 2), "utf-8");
   console.log(`\nWrote data/matches.json (${matches.length} matches)`);
 }
