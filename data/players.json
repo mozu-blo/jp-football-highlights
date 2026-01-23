@@ -1,0 +1,37 @@
+[
+  {
+    "player_id": "mitoma_kaoru",
+    "name_ja": "三笘薫",
+    "name_en": "Kaoru Mitoma",
+    "club": "Brighton & Hove Albion",
+    "league": "Premier League"
+  },
+  {
+    "player_id": "endo_wataru",
+    "name_ja": "遠藤航",
+    "name_en": "Wataru Endo",
+    "club": "Liverpool",
+    "league": "Premier League"
+  },
+  {
+    "player_id": "kubo_takefusa",
+    "name_ja": "久保建英",
+    "name_en": "Takefusa Kubo",
+    "club": "Real Sociedad",
+    "league": "La Liga"
+  },
+  {
+    "player_id": "kamada_daichi",
+    "name_ja": "鎌田大地",
+    "name_en": "Daichi Kamada",
+    "club": "Eintracht Frankfurt",
+    "league": "Bundesliga"
+  },
+  {
+    "player_id": "ito_junya",
+    "name_ja": "伊東純也",
+    "name_en": "Junya Ito",
+    "club": "Stade de Reims",
+    "league": "Ligue 1"
+  }
+]
