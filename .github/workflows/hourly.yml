@@ -11,6 +11,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -19,7 +22,9 @@ jobs:
           node-version: "20"
 
       - run: npm install
+
       - run: npm run fetch:matches
+
       - run: npm run build:feed
 
       - name: Commit and push if changed
@@ -27,4 +32,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/feed.json data/matches.json
-          git diff --cached --quiet || (git commit -m "auto: update feed" && git push)
+          git diff --cached --quiet || (git commit -m "auto: update data" && git push)
