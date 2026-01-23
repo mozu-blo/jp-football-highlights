@@ -52,10 +52,14 @@ async function main() {
   }
 
   const { from, to } = weekRangeJST();
+  console.log(`[week] from=${from} to=${to}`);
+  console.log(`[clubs in players.json] ${[...clubToPlayers.keys()].join(" | ")}`);
+
   const matches = [];
 
   for (const lg of leagues) {
-    // seasonは一旦 2025 固定（次でリーグ別に自動化する）
+    console.log(`\n[league] ${lg.league} (id=${lg.id}) season=2025`);
+
     const json = await api("/fixtures", {
       league: String(lg.id),
       season: "2025",
@@ -64,9 +68,21 @@ async function main() {
     });
 
     const items = json?.response || [];
+    console.log(`[fixtures returned] ${items.length}`);
+
+    // ★デバッグ：今週返ってきた試合のクラブ名を全部見る（多すぎたら最初の30件だけ）
+    const preview = items.slice(0, 30).map((f) => ({
+      date: f.fixture?.date,
+      home: f.teams?.home?.name,
+      away: f.teams?.away?.name
+    }));
+    console.log(`[fixtures preview first ${preview.length}]`);
+    console.log(JSON.stringify(preview, null, 2));
+
     for (const f of items) {
       const home = f.teams?.home?.name;
       const away = f.teams?.away?.name;
+
       const hit = [];
       if (clubToPlayers.has(home)) hit.push(...clubToPlayers.get(home));
       if (clubToPlayers.has(away)) hit.push(...clubToPlayers.get(away));
@@ -81,11 +97,13 @@ async function main() {
         players: uniq(hit)
       });
     }
+
+    console.log(`[matched] ${matches.length} (cumulative)`);
   }
 
   const out = { week_start: from, week_end: to, matches };
   fs.writeFileSync("data/matches.json", JSON.stringify(out, null, 2), "utf-8");
-  console.log(`Wrote data/matches.json (${matches.length} matches)`);
+  console.log(`\nWrote data/matches.json (${matches.length} matches)`);
 }
 
 main().catch((e) => {
