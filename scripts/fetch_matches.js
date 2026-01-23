@@ -10,13 +10,13 @@ function isoDate(d) {
   return `${y}-${m}-${day}`;
 }
 
-// JSTで「今日」を作る（時差で日付がズレるのを防ぐ）
+// JST基準の「今日」
 function nowJST() {
   return new Date(Date.now() + 9 * 60 * 60 * 1000);
 }
 
-// 直近N日（今日含む）: from〜to
-function rollingRangeJST(daysBack = 10) {
+// 直近N日（今日含む）
+function rollingRangeJST(daysBack = 30) {
   const jst = nowJST();
   const to = new Date(jst);
   const from = new Date(jst);
@@ -42,29 +42,55 @@ function uniq(arr) {
   return [...new Set(arr)];
 }
 
+// ★リーグの「現在シーズン」をAPIから取る（current=trueが最優先、なければ最大年）
+async function resolveSeason(leagueId) {
+  const json = await api("/leagues", { id: String(leagueId) });
+  const league = json?.response?.[0]?.league;
+  const seasons = json?.response?.[0]?.seasons || [];
+
+  const current = seasons.find((s) => s.current === true);
+  const maxYear = seasons.reduce((m, s) => Math.max(m, Number(s.year || 0)), 0);
+
+  const season = current ? Number(current.year) : maxYear;
+
+  console.log(`[season] leagueId=${leagueId} leagueName=${league?.name || "?"} resolved=${season}`);
+  console.log(
+    `[season candidates] ${seasons
+      .slice(-6)
+      .map((s) => `${s.year}${s.current ? "*" : ""}`)
+      .join(", ")}`
+  );
+
+  if (!season) throw new Error(`Could not resolve season for league ${leagueId}`);
+  return season;
+}
+
 async function main() {
   const players = loadJson("data/players.json");
   const leagues = loadJson("data/leagues.json");
 
+  // club -> [player_id]
   const clubToPlayers = new Map();
   for (const p of players) {
     if (!clubToPlayers.has(p.club)) clubToPlayers.set(p.club, []);
     clubToPlayers.get(p.club).push(p.player_id);
   }
 
-  // ★ここが変更点：週固定 → 直近10日
-  const { from, to } = rollingRangeJST(10);
-  console.log(`[range] from=${from} to=${to} (rolling 10 days, JST-based)`);
+  const { from, to } = rollingRangeJST(30);
+  console.log(`[range] from=${from} to=${to} (rolling 30 days, JST-based)`);
   console.log(`[clubs in players.json] ${[...clubToPlayers.keys()].join(" | ")}`);
 
   const matches = [];
 
   for (const lg of leagues) {
-    console.log(`\n[league] ${lg.league} (id=${lg.id}) season=2025`);
+    console.log(`\n[league] ${lg.league} (id=${lg.id})`);
+
+    // ★ここが重要：シーズンを自動で決める
+    const season = await resolveSeason(lg.id);
 
     const json = await api("/fixtures", {
       league: String(lg.id),
-      season: "2025",
+      season: String(season),
       from,
       to
     });
@@ -72,6 +98,7 @@ async function main() {
     const items = json?.response || [];
     console.log(`[fixtures returned] ${items.length}`);
 
+    // デバッグ：最初の30件だけ表示
     const preview = items.slice(0, 30).map((f) => ({
       date: f.fixture?.date,
       home: f.teams?.home?.name,
