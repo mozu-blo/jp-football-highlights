@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: "20"
 
+- run: npm run fetch:matches
       - run: npm run build:feed
 
       - name: Commit and push if changed
