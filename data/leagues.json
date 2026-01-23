@@ -1,8 +1,3 @@
 [
-  { "league": "Premier League", "id": 39 },
-  { "league": "Championship", "id": 40 },
-  { "league": "Bundesliga", "id": 78 },
-  { "league": "Ligue 1", "id": 61 },
-  { "league": "Eredivisie", "id": 88 },
-  { "league": "La Liga", "id": 140 }
+  { "league": "Premier League", "id": 39 }
 ]
